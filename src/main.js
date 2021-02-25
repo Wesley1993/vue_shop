@@ -3,6 +3,10 @@ import App from './App.vue'
 import router from './router'
 import './plugins/element.js'
 
+// 导入全局样式
+import './assets/global.css'
+// 导入字体图标
+import './assets/font/iconfont.css'
 Vue.config.productionTip = false
 
 new Vue({
