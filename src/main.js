@@ -7,6 +7,11 @@ import './plugins/element.js'
 import './assets/global.css'
 // 导入字体图标
 import './assets/font/iconfont.css'
+
+import axios from 'axios'
+// 配置默认请求根路径
+axios.defaults.baseURL = 'https://www.liulongbin.top:8888/api/private/v1/'
+Vue.prototype.$http = axios
 Vue.config.productionTip = false
 
 new Vue({
