@@ -1,6 +1,6 @@
 <template>
   <el-container class="home-container ">
-<!--    头部区域  -->
+    <!--    头部区域  -->
     <el-header>
       <div class="logo">
         <img src="../assets/logo.png" alt="">
@@ -8,12 +8,36 @@
       </div>
       <el-button type="info" @click="logout">退出</el-button>
     </el-header>
-<!--    页面主体区域  -->
+    <!--    页面主体区域  -->
     <el-container>
-<!--      侧边栏-->
-      <el-aside width="200px">Aside</el-aside>
-<!--      右侧内容主体  -->
-      <el-main>Main</el-main>
+      <!--      侧边栏-->
+      <el-aside :width="collapse?'64px':'200px'">
+        <div class="toggle-button" @click="toggleCollapse">|||</div>
+        <el-menu
+          background-color="#545c64"
+          text-color="#fff"
+          active-text-color="#409eff" unique-opened :collapse="isCollapse" :collapse-transition="false">
+<!--    一级菜单      -->
+          <el-submenu :index="item.id+''" v-for="item in menuList" :key="item.id">
+<!--    一级菜单的模板区域       -->
+            <template slot="title">
+              <i class="iconfont" :class="iconList[item.id]"></i>
+              <span>{{item.authName}}</span>
+            </template>
+<!--    二级菜单        -->
+            <el-menu-item :index="subItem.id+''" v-for="subItem in item.children" :key="subItem.id">
+              <template slot="title">
+                <i class="el-icon-menu"></i>
+                <span>{{subItem.authName}}</span>
+              </template>
+            </el-menu-item>
+          </el-submenu>
+        </el-menu>
+      </el-aside>
+      <!--      右侧内容主体  -->
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -22,11 +46,22 @@
 export default {
   name: 'HomePage',
   data () {
-    return {}
+    return {
+      menuList: [],
+      iconList: {
+        125: 'icon-user',
+        103: 'icon-tijikongjian',
+        101: 'icon-shangpin',
+        102: 'icon-danju',
+        145: 'icon-baobiao'
+      },
+      isCollapse: false
+    }
   },
   computed: {},
   watch: {},
   created () {
+    this.getMenuList()
   },
   mounted () {
   },
@@ -34,6 +69,17 @@ export default {
     logout () {
       window.sessionStorage.clear()
       this.$router.push('/login')
+    },
+    // 获取所有菜单
+    async getMenuList() {
+      const { data: res } = await this.$http.get('menus')
+      if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
+      this.menuList = res.data
+      console.log(res)
+    },
+    // 是否折叠菜单
+    toggleCollapse() {
+      this.isCollapse = !this.isCollapse
     }
   }
 }
@@ -43,30 +89,51 @@ export default {
 .home-container {
   height: 100%;
 }
+
 .el-header {
-  background-color:#666;
+  background-color: #666;
   display: flex;
   justify-content: space-between;
   padding-left: 10px;
   align-items: center;
   height: 60px;
+
   .logo {
     display: flex;
     align-items: center;
-    span{
-      color: #fff;
-      font-size: 16px;
+    color: #fff;
+    font-size: 20px;
+
+    span {
       margin-left: 15px;
     }
+
     img {
       height: 60px;
     }
   }
 }
+
 .el-aside {
-  background-color:#333744;
+  background-color: #333744;
+  .el-menu {
+    border-right: none;
+  }
 }
+
 .el-main {
   background-color: #eaedf1;
+}
+.iconfont {
+  margin-right: 10px;
+}
+.toggle-button {
+  background-color: #999;
+  color: #fff;
+  line-height: 24px;
+  font-size: 10px;
+  text-align: center;
+  letter-spacing: .2em;
+  cursor: pointer;
 }
 </style>
